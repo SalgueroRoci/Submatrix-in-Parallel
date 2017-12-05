@@ -28,7 +28,7 @@ n - Matrix square size </br>
 p - Number of processes </br>
 z - Submatrix size  </br>
 
-# Splitting up the number of rows each process will deal with </br>
+## Splitting up the number of rows each process will deal with </br>
 (z - 1) - number of elements in overlap </br>
 (p - 1) - number of overlaps </br>
 (n + ((z - 1) * (p - 1)) - Amount of elements to divide (amt) </br>
@@ -43,10 +43,11 @@ Split up array:  </br>
         r - (p - 1) -> rowchunk = floor( amt / p ) </br>
         
 # Pseudocode
+```c
 if ( rank == 0 ) { </br>
-      read_file(file_name); </br>
-      //get n; </br>
-      A\[n * n] //store in 1D matrix\[n * n] </br>
+        read_file(file_name); </br>
+        //get n; </br>
+        A\[n * n] //store in 1D matrix\[n * n] </br>
 } </br>
 
 B_Cast(n, 0) //broadcast the n value to all other proces from rank 0 </br>
@@ -56,6 +57,7 @@ get subsize_z, rowchunk </br>
 subsize_z = 2; </br>
 amt_to_split = size_n + ((subsize_z -1) * (proc_size - 1)); </br>
 r = amt_to_split % proc_size; </br>
+
 if (rank < r) { </br>
   rowchunk = ceil( (float)amt_to_split / (float)proc_size);  </br>      
 } </br>
@@ -100,7 +102,7 @@ for( row = startRow; row < endRow - z + 2; row++ ) </br>
             sum = 0 ; </br>
             for( k = row; k < row + z' k++) </br>
                 for( j = col; j < col + z; j++) </br>
-                    sum += A\[n * k + j - start] </br>
+                   sum += A\[n * k + j - start] </br>
 
                     if( sum > maxSum ) </br>
                         maxSum = sum; </br>
@@ -112,7 +114,6 @@ Gather( max, 0 ) // gather from all processes maxSum,maxRow, maxCol from each on
 if ( rank == 0 ) { </br>
       for ( i = 0 ; i < p) </br>
           //find max among max </br>
-
-      //print max </br>
+       //print max </br>
 } </br>
-   
+``` 
