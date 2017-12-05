@@ -4,7 +4,8 @@ Identifying the submatrix of 2x2 with the largest sum of values: </br>
 Programmer: Rocio Salguero </br>
 Published: 12/1/17 </br>
 
-Problem: Find the submatrix z x z (default 2 x 2 here) in an n x n matrix in parallel </br>
+### Problem: 
+    Find the submatrix z x z (default 2 x 2 here) in an n x n matrix in parallel </br>
 
 //Docker https://hub.docker.com/r/nlknguyen/alpine-mpich/ </br>
 docker run --rm -it -v $(pwd):/project nlknguyen/alpine-mpich </br>
@@ -14,7 +15,7 @@ run: mpirun -n \<number of processes\> ./\<name> \<filename\> </br>
 
 row/col start is 0. Relative matrix [indexrow][indexcol] </br>
 
-MPI Programming Difficulties: </br>
+### MPI Programming Difficulties: </br>
   - MPI handles 1D arrays only </br>
   - Splitting up the array (How many elements exactly?) to all the proccess </br>
   - Sending a struct using MPI </br>
