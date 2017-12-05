@@ -16,11 +16,6 @@ run: mpirun -n \<number of processes\> ./\<name> \<filename\> </br>
 
 row/col start is 0. Relative matrix [indexrow][indexcol] </br>
 
-### MPI Programming Difficulties: </br>
-  - MPI handles 1D arrays only </br>
-  - Splitting up the array (How many elements exactly?) to all the proccess </br>
-  - Sending a struct using MPI </br>
-  
 # Parameters:  </br>
 n > z > 0 </br>
 
@@ -43,7 +38,12 @@ Split up array:  </br>
   
   Ranks 0 - (r - 1) -> rowchunk = ceil( amt / p ) </br>
         r - (p - 1) -> rowchunk = floor( amt / p ) </br>
-        
+
+### MPI Programming Difficulties: </br>
+  - MPI handles 1D arrays only </br>
+  - Splitting up the array (How many elements exactly?) to all the proccess </br>
+  - Sending a struct using MPI </br>
+  
 # Pseudocode
 ```c
 if ( rank == 0 ) { 
