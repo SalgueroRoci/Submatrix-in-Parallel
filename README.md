@@ -89,7 +89,7 @@ if ( rank == 0 )  {
 } //end of rank 0    
 else { 
       recv(startRow, 0 ) 
-      recv( A\[0], rowchunk * n, 0 )  
+      recv( A[0], rowchunk * n, 0 )  
 }
 
 //calculate sum / all procces calculate sum 
@@ -117,3 +117,7 @@ if ( rank == 0 ) {
      //print max 
 } 
 ``` 
+- [x] @mentions, #refs, [links](), **formatting**, and <del>tags</del> supported
+- [x] list syntax required (any unordered or ordered list supported)
+- [x] this is a complete item
+- [ ] this is an incomplete item
