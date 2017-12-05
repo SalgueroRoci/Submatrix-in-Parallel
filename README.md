@@ -56,7 +56,7 @@ get subsize_z, rowchunk </br>
 subsize_z = 2; </br>
 amt_to_split = size_n + ((subsize_z -1) * (proc_size - 1)); </br>
 r = amt_to_split % proc_size; </br>
-if (rank < r) {
+if (rank < r) { </br>
   rowchunk = ceil( (float)amt_to_split / (float)proc_size);  </br>      
 } </br>
 else if (rank >= r) { </br>
@@ -68,51 +68,51 @@ if ( rank == 0 )  { </br>
     rowchunk = ceil( amt / p ) </br>
     prevend = startRow + rowchunk - 1; </br>
     
-    for ( proc = 0 < r : proc++ ) { </br>
-        startRow = prevend - ( z - 2 ) </br>
-        prevend = startRow + rowchunk - 1 </br>
-        send( startRow, proc ) //send the start row value to the process </br>
-        send ( A\[ startRow * n ] , rowchunk * n , proc ) </br>
+    for ( proc = 0 < r : proc++ ) { 
+        startRow = prevend - ( z - 2 ) 
+        prevend = startRow + rowchunk - 1 
+        send( startRow, proc ) //send the start row value to the process 
+        send ( A\[ startRow * n ] , rowchunk * n , proc ) 
     }  </br>
-    rowchunk = floor( amt / p ) </br>
-    for ( proc = r < p; proc++ ) { </br>
-        startRow = prevend - ( z - 2 ) </br> 
-        prevend = startRow + rowchunk - 1 </br>
-        send( startRow, proc ) //send the start row value to the process </br>
-        send ( A\[ startRow * n ] , rowchunk * n , proc ) </br>
-    }  </br>
-    //reset for process 0  </br> 
-    startRow = 0 ;  </br>
-    rowchunk = ceil( amt / p )  </br>
+    rowchunk = floor( amt / p ) 
+    for ( proc = r < p; proc++ ) { 
+        startRow = prevend - ( z - 2 )  
+        prevend = startRow + rowchunk - 1 
+        send( startRow, proc ) //send the start row value to the process 
+        send ( A\[ startRow * n ] , rowchunk * n , proc ) 
+    }  
+    //reset for process 0  
+    startRow = 0 ;  
+    rowchunk = ceil( amt / p )  
 } //end of rank 0    </br>
-else {
-    recv(startRow, 0 ) </br>
-    recv( A\[0], rowchunk * n, 0 ) </br> 
+else { </br>
+      recv(startRow, 0 ) </br>
+      recv( A\[0], rowchunk * n, 0 ) </br> 
 }
 
 //calculate sum / all procces calculate sum 
-  start = startRow * n; </br>
-  endRow = startRow + rowchunk - 1; </br>
-  maxSum = -9999; maxRow = 0 ; maxCol = 0; </br>
-  for( row = startRow; row < endRow - z + 2; row++ ) </br>
+start = startRow * n; </br>
+endRow = startRow + rowchunk - 1; </br>
+maxSum = -9999; maxRow = 0 ; maxCol = 0; </br>
+for( row = startRow; row < endRow - z + 2; row++ ) </br>
     for ( col = 0; col < n - z + 1 ; col++) </br>
-          //sum of matrix </br>
-          sum = 0 ; </br>
-          for( k = row; k < row + z' k++) </br>
-              for( j = col; j < col + z; j++) </br>
-                  sum += A\[n * k + j - start] </br>
-          
-          if( sum > maxSum ) </br>
-              maxSum = sum; </br>
-              maxRow = row; </br> 
-              maxCol = col; </br> 
+            //sum of matrix </br>
+            sum = 0 ; </br>
+            for( k = row; k < row + z' k++) </br>
+                for( j = col; j < col + z; j++) </br>
+                    sum += A\[n * k + j - start] </br>
+
+                    if( sum > maxSum ) </br>
+                        maxSum = sum; </br>
+                        maxRow = row; </br> 
+                        maxCol = col; </br> 
               
-    Gather( max, 0 ) // gather from all processes maxSum,maxRow, maxCol from each on process 0</br>
+Gather( max, 0 ) // gather from all processes maxSum,maxRow, maxCol from each on process 0</br>
 
 if ( rank == 0 ) { </br>
-    for ( i = 0 ; i < p) </br>
-        //find max among max </br>
-        
-    //print max </br>
+      for ( i = 0 ; i < p) </br>
+          //find max among max </br>
+
+      //print max </br>
 } </br>
    
