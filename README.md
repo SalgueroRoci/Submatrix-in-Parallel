@@ -5,7 +5,7 @@ Programmer: Rocio Salguero </br>
 Published: 12/1/17 </br>
 
 ### Problem: 
-    Find the submatrix z x z (default 2 x 2 here) in an n x n matrix in parallel </br>
+    Find the submatrix z x z (default 2 x 2 here) in an n x n matrix in parallel 
 
 //Docker https://hub.docker.com/r/nlknguyen/alpine-mpich/ </br>
 docker run --rm -it -v $(pwd):/project nlknguyen/alpine-mpich </br>
