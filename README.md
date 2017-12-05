@@ -47,7 +47,7 @@ Split up array:  </br>
 if ( rank == 0 ) { 
         read_file(file_name); 
         //get n; 
-        A\[n * n] //store in 1D matrix\[n * n] 
+        A[n * n] //store in 1D matrix[n * n] 
 } 
 
 B_Cast(n, 0) //broadcast the n value to all other proces from rank 0 
@@ -59,11 +59,11 @@ amt_to_split = size_n + ((subsize_z -1) * (proc_size - 1));
 r = amt_to_split % proc_size; 
 
 if (rank < r) { 
-  rowchunk = ceil( (float)amt_to_split / (float)proc_size);       
+    rowchunk = ceil( (float)amt_to_split / (float)proc_size);       
 } 
 else if (rank >= r) { 
-  rowchunk = floor((float)amt_to_split / (float) proc_size); 
-} </br>
+    rowchunk = floor((float)amt_to_split / (float) proc_size); 
+} 
     
 if ( rank == 0 )  { 
     startRow = 0; 
@@ -74,14 +74,14 @@ if ( rank == 0 )  {
         startRow = prevend - ( z - 2 ) 
         prevend = startRow + rowchunk - 1 
         send( startRow, proc ) //send the start row value to the process 
-        send ( A\[ startRow * n ] , rowchunk * n , proc ) 
-    }  </br>
+        send ( A[ startRow * n ] , rowchunk * n , proc ) 
+    }  
     rowchunk = floor( amt / p ) 
     for ( proc = r < p; proc++ ) { 
         startRow = prevend - ( z - 2 )  
         prevend = startRow + rowchunk - 1 
         send( startRow, proc ) //send the start row value to the process 
-        send ( A\[ startRow * n ] , rowchunk * n , proc ) 
+        send ( A[ startRow * n ] , rowchunk * n , proc ) 
     }  
     //reset for process 0  
     startRow = 0 ;  
@@ -114,6 +114,6 @@ Gather( max, 0 ) // gather from all processes maxSum,maxRow, maxCol from each on
 if ( rank == 0 ) { 
       for ( i = 0 ; i < p) 
           //find max among max 
-       //print max 
-} </br>
+     //print max 
+} 
 ``` 
