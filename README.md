@@ -9,8 +9,8 @@ Problem: Find the submatrix z x z (default 2 x 2 here) in an n x n matrix in par
 //Docker https://hub.docker.com/r/nlknguyen/alpine-mpich/ </br>
 docker run --rm -it -v $(pwd):/project nlknguyen/alpine-mpich </br>
 
-compile: mpicc project2.c -o <name> </br>
-run: mpirun -n <number of processes> ./<name> <filename> </br>
+compile: mpicc project2.c -o \<name> </br>
+run: mpirun -n \<number of processes\> ./\<name> <filename> </br>
 
 row/col start is 0. Relative matrix [indexrow][indexcol] </br>
 
