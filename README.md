@@ -43,7 +43,7 @@ Split up array:  </br>
   - MPI handles 1D arrays only </br>
   - Splitting up the array (How many elements exactly?) to all the proccess </br>
   - Sending a struct using MPI </br>
-  
+
 # Pseudocode
 ```c
 if ( rank == 0 ) { 
@@ -120,6 +120,6 @@ if ( rank == 0 ) {
 } 
 ``` 
 
-##Test
-![Test Output]
+###Test
+!\[Test Output]
 (https://raw.githubusercontent.com/SalgueroRoci/Submatrix-in-Parallel/master/test.png)
