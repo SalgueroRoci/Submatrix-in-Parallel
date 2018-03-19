@@ -1,0 +1,234 @@
+//https://github.com/wesleykendall/mpitutorial/tree/gh-pages/tutorials
+
+
+//Docker https://hub.docker.com/r/nlknguyen/alpine-mpich/
+docker run --rm -it -v $(pwd):/project nlknguyen/alpine-mpich
+
+//MPI Notes:
+A message-passing library specification
+Rank: The ID of a process, starts counting from 0
+Handle: The unique ID for the communication that is being done
+Buffer: An array or string, either controlled by the user or MPI, which is being transported
+Core: An individual compute element
+Node: A collection of compute elements that share the same network address, share memory, and are typically on the same main board
+Hostfile: The list of hosts you will be running on
+MPI Fabric: The communications network MPI constructs either by itself or using a daemon
+Blocking: Means the communications subroutine waits for the completion of the routine before moving on.
+Collective: All ranks talk to everyone else to solve some problem.
+
+//MPI Call
+All C/C++ calls look like
+MPI_Xxxx(….)
+Each MPI call in C/C++ returns an error code
+All Fortran 77 calls look like
+MPI_XXXX(…)
+Each MPI call has an error return code as output argument
+
+//In C:
+mpi.h must be #included
+MPI functions return error codes or MPI_SUCCESS
+MPI_Init( int* argc, char*** argv) = To become part of an MPI communicator each process has to call
+MPI_COMM_WORLD - predefine communicator
+MPI_Finalize(ierr) - To stop participating in any communicator (to stop doing MPI work) is used to clean up the MPI environment. No more MPI calls can be made after this one.
+MPI_Abort(comm, errorcode, ierr)
+#include <mpi.h>
+
+//Running MPI programs 
+mpicc p1.cpp –o p1 to compile 
+mpirun –n 2 hello 
+
+MPI_Comm_size( MPI_COMM_WORLD, &size ) reports the number of processes.
+MPI_Comm_rank(MPI_COMM_WORLD, myrank, ierr)
+ reports the rank, a number between 0 and size-1, identifying the calling process
+
+A group and context together form a communicator.
+MPI_Comm_split to create new communicators 
+
+//SEND & RECV
+Blocking communication: the program will not return from the subroutine call until the copy from/to the system buffer has completed 
+Non-blocking communication: The program will return immediately from the subroutine call and will not wait for the copy from / to the system buffer to be completed.
+
+MPI_Send(&buffer, count, datatype, destination, tag, communicator)
+MPI_Recv(&buffer, count, datatype, source, tag, communicator, &status)
+
+buffer: Data to be sent / received ( e.g., array )
+count: Number of data elements
+datatype: Type of data, for example MPI_INT, MPI_REAL8, etc
+destination: Rank of destination MPI process
+tag: Message label
+communicator: Set of MPI processes used for communication
+status: The status object
+
+//SEND
+The message buffer is described by (start, count, datatype).
+The target process is specified by dest, which is the rank of the target process in the communicator specified by comm.
+When this function returns, the data has been delivered to the system and the buffer can be reused.  The message may not have been received by the target process.
+Waits until a matching (on source and tag) message is received from the system, and the buffer can be used.
+When this function returns, the data has been delivered to the system and the buffer can be reused.  The message may not have been received by the target process.
+
+//Recv
+Waits until a matching (on source and tag) message is received from the system, and the buffer can be used.
+source is rank in communicator specified by comm, or MPI_ANY_SOURCE.
+status contains further information
+Receiving fewer than count occurrences of datatype is OK, but receiving more is an error.
+
+source is rank in communicator specified by comm, or MPI_ANY_SOURCE.
+status contains further information
+Receiving fewer than count occurrences of datatype is OK, but receiving more is an error.
+
+MPI_SHORT
+MPI_INT
+MPI_LONG
+MPI_LONG_LONG
+MPI_CHAR
+MPI_UNSIGNED_CHAR
+MPI_UNSIGNED_SHORT
+MPI_UNSIGNED
+MPI_UNSIGNED_LONG
+MPI_UNSIGNED_LONG_LONG
+MPI_FLOAT
+MPI_DOUBLE
+MPI_LONG_DOUBLE
+MPI_BYTE
+
+http://mpitutorial.com/tutorials/mpi-send-and-receive/
+
+MPI_Get_count( MPI_Status* status, MPI_Datatype datatype, int* count)
+MPI_Get_count( &status, datatype, &recvd_count );
+
+//MPI_Status structure is the only way to find out the actual sender and tag of the message. 
+MPI_Recv is not guaranteed to receive the entire amount of elements passed as the argument to the function call; instead, it receives the amount of elements that were sent to it (and returns an error if more elements were sent than the desired receive amount). 
+The MPI_Get_count function is used to determine the actual receive amount.
+//http://mpitutorial.com/tutorials/dynamic-receiving-with-mpi-probe-and-mpi-status/
+
+MPI_Probe( int source, int tag, MPI_Comm comm,  MPI_Status* status)
+think of MPI_Probe as an MPI_Recv that does everything but receive the message
+Similar to MPI_Recv, MPI_Probe will block for a message with a matching tag and sender. 
+
+//Different Sends
+Standard (MPI_Send)
+    The sending process returns when the system can buffer the message or when the message is received and the buffer is ready for reuse.
+Buffered (MPI_Bsend)
+    The sending process returns when the message is buffered in an application-supplied buffer.
+Synchronous (MPI_Ssend)
+    The sending process returns only if a matching receive is posted and the receiving process has started to receive the message.
+Ready (MPI_Rsend)
+    The message is sent as soon as possible.
+
+//Non-Blocking Send/Recieve 
+The program will return immediately from the subroutine call and will not wait for the copy from / to the system buffer to be completed.
+MPI_Isend(&buffer, count, datatype, destination, tag, communicator)
+MPI_Irecv(&buffer, count, datatype, source, tag, communicator, &status)
+
+//Standard collective communication techniques
+MPI_Bcast distributes data from one process (the root) to all others in a communicator.
+MPI_Reduce combines data from all processes in communicator and returns it to one process.
+
+//Category
+1. One buffer - MPI_Bcast
+2. One send buffer and one receiver buffer - MPI_Gather, MPI_Scatter, MPI_Allgather, MPI_Alltoall, MPI_Gatherv, MPI_Scatterv, MPI_Allgatherv, MPI_Alltoallv
+3. Reduction - MPI_Reduce, MPI_Allreduce, MPI_Scan, MPI_Reduce_scatter
+4. Others - MPI_Barrier, MPI_Op_create, MPI_Op_free
+
+//Parallelizing DO / FOR loops
+    Block distribution
+    let p be number of proccessors, and n be the array max. 
+    Distribute by r = n %  p
+    proccessors from 0 to r-1 get cieling(n/p)
+    proccessors from r to p-1 get floor(n/p)
+
+    Cyclic distribution
+    The iterations are assigned to processes in a round-robin fashion.
+    example p = 4 and n = 14 : parallel = 0 1 2 3 0 1 2 3 0 1 2 3 0 1
+
+//MPI Operations
+MPI_Reduce(void* send_data, void* recv_data, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm communicator) 
+    reduce data from different procces using an operation 
+    MPI_SUM, MPI_PROD (returns sum, product) - MPI_INTEGER, MPI_REAL, MPI_DOUBLE_PRECISION, MPI_COMPLEX
+    MPI_MAX, MPI_MIN (returns max, min) - MPI_INTEGER, MPI_REAL, MPI_DOUBLE_PRECISION
+    MPI_MAXLOC, MPI_MINLOC (return the max /min value and the rank of process that owns it) - MPI_2INTEGER, MPI_2REAL, MPI_2DOUBLE_PRECISION
+    MPI_LAND, MPI_LOR, MPI_LXOR (logical and, or, xor) - MPI_LOGICAL
+    MPI_BAND, MPI_BOR, MPI_BXOR(bitwise and, or, xor) - MPI_INTEGER, MPI_BYTE
+
+    shrinks arrays and operation on index column only 
+
+MPI_Scatter( void* send_data, int send_count, MPI_Datatype send_datatype, void* recv_data, int recv_count, MPI_Datatype recv_datatype, int root, MPI_Comm communicator)
+    MPI_Scatter sends chunks of an array to different processes. 
+    MPI_Scatter takes an array of elements and distributes the elements in the order of process’ rank. 
+    Although the root process (process zero) contains the entire array of data, MPI_Scatter will copy the appropriate element into the receiving buffer of the process.
+
+MPI_Gather( void* send_data, int send_count, MPI_Datatype send_datatype, void* recv_data, int recv_count, MPI_Datatype recv_datatype, int root, MPI_Comm communicator)
+    it takes elements from each process and gathers them to the root process. 
+    The elements are ordered by the rank of the process from which they were received. 
+
+    Only the root process needs to have a valid receive buffer. All other calling processes can pass NULL for recv_data.
+    recv_count parameter is the count of elements received per process, not the total summation of counts from all processes
+
+//Many-to-many communication
+    MPI_Allgather( void* send_data, int send_count, MPI_Datatype send_datatype, void* recv_data, int recv_count, MPI_Datatype recv_datatype, MPI_Comm communicator)
+    Given a set of elements distributed across all processes, MPI_Allgather will gather all of the elements to all the processes. 
+    MPI_Allgather is an MPI_Gather followed by an MPI_Bcast.
+    
+    MPI_Allreduce(void* send_data, void* recv_data, int count, MPI_Datatype datatype,MPI_Op op, MPI_Comm communicator)
+    MPI_Reduce with the exception that it does not need a root process id (since the results are distributed to all processes).
+    http://mpitutorial.com/tutorials/mpi-reduce-and-allreduce/
+
+//Parallel Rank and Sorting 
+http://mpitutorial.com/tutorials/performing-parallel-rank-with-mpi/
+
+MPI_Scan( void *sendbuf, void *recvbuf, int count , MPI_Datatype datatype, MPI_Op op, MPI_Comm comm )
+    Calling this procedure allows one to perform a prefix reduction on the data located in sendbuf on each process with the result available in the memory address recvbuf.
+    A scan operation calculates all the partial reductions on the data stored locally on the processes.
+
+http://mpitutorial.com/tutorials/introduction-to-groups-and-communicators/ 	
+//Introduction to Groups and Communicators
+	MPI_COMM_WORLD is sufficient if there are a relatively small number of processes
+	If you wanted to perform calculations on a subset of the processes in a grid
+	MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* newcomm)
+		new communicators by "splitting" a communicator into a group of sub-communicators based on the input values color and key.
+	
+	MPI_Comm_free. 
+	When an MPI object will no longer be used, it should be freed so it can be reused later. 
+	MPI has a limited number of objects that it can create at a time and not freeing your objects could result in a runtime error if MPI runs out of allocatable objects.
+
+	MPI_Comm_dup is the most basic and creates a duplicate of a communicator. 
+
+	MPI_Comm_create(MPI_Comm comm,MPI_Group group,MPI_Comm* newcomm)
+	MPI_Comm_create is collective over every process in comm.
+	
+	MPI_Group - MPI_Object 
+	the context (or ID) that differentiates one communicator from another and 
+	the group of processes contained by the communicator. 
+	
+	Using Union and Intersection to create new groups
+	Get the group of processes in a communicator MPI_Comm_group
+	MPI_Comm_group(MPI_Comm comm,MPI_Group* group)
+	A communicator contains a context, or ID, and a group. 
+
+	
+	In both cases, the operation is performed on group1 and group2 and the result is stored in newgroup.
+	Getting the union:
+	MPI_Group_union(MPI_Group group1,  MPI_Group group2, MPI_Group* newgroup)
+	
+	Getting the intersection:
+	MPI_Group_intersection(MPI_Group group1, MPI_Group group2, MPI_Group* newgroup)
+
+	MPI_Comm_create_group(MPI_Comm comm, MPI_Group group, int tag, MPI_Comm* newcomm)
+	MPI_Comm_create_group is a function to create a new communicator, but instead of doing calculations on the fly to decide the makeup, like MPI_Comm_split, this function takes an MPI_Group object and creates a new communicator that has all of the same processes as the group.
+	
+http://mpitutorial.com/tutorials/mpi-broadcast-and-collective-communication/ 
+Synchronization MPI 
+	MPI_Barrier(MPI_Comm communicator)
+	Every collective call you make is synchronized. In other words, if you can't successfully complete an MPI_Barrier, then you also can't successfully complete any collective call. 
+	If you try to call MPI_Barrier or other collective routines without ensuring all processes in the communicator will also call it, your program will idle.
+
+	
+MPI_Wtime
+	returns a double giving time in seconds from a fixed time in the past
+	The times returned are local to the node/process that made the call.
+	startime = MPI_Wtime();
+	/* part of program to be timesd  */
+	stoptime = MPI_Wtime();
+	time = stoptime - starttime;
+
+
